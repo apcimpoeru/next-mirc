@@ -74,6 +74,8 @@ const SocketHandler = (req, res) => {
               roomList.push(room);
             }
           }
+          
+
           io.in('#' + roomName).emit('refreshRooms', roomList);
 
         });

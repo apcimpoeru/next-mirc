@@ -21,8 +21,13 @@ export default function ChatForm(props){
 
     async function sendMessage(e){
 
+        
         let message = formRef.current.value;
         let room = props.room;
+
+        console.log('--- sendMessage ---');
+        console.log(message);
+        console.log(room);
 
         if (e){
             e.preventDefault();
