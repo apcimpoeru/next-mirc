@@ -3,6 +3,7 @@ import Content from "../components/componentLibrary/content/content";
 import Mirc from "../components/componentLibrary/chat/mirc/mirc";
 import { SocketContext } from "../lib/socketContext";
 import { useState, useEffect, useContext } from "react";
+import ChatUsername from "../components/componentLibrary/chatUsername/chatUsername";
 
 export default function Chat(){
 
@@ -10,15 +11,33 @@ export default function Chat(){
     const [username, setUsername] = useState('');
     const [rooms, setRooms] = useState([]);
 
-    const [usernameField, setUsernameField] = useState(<></>);
-    
-    useEffect(() => {
+    const [content, setContent] = useState(<ChatUsername onSubmit={sendUsername} />);
+    const [centered, setCentered] = useState(true);
 
-        if (username === '') {
-            setUsernameField(<p>empty</p>);
-        }
-        
+    useEffect(() => {
+            
+            if (username) {
+    
+                setContent(<Mirc
+                                height="92vh"
+                                topHeight="4vh"
+                                bottomHeight="84vh"
+                            />);
+
+                setCentered(false);
+
+                console.log('username set');
+                socket.emit('setUsername', username);
+    
+            }
+    
     }, [username]);
+
+    function sendUsername(e){
+        e.preventDefault();
+        let name = e.target.lastmori.value;
+        setUsername(name);
+    }
 
     
     return <div>
@@ -27,14 +46,10 @@ export default function Chat(){
             headerHeight="min-h-[8vh]"
             contentHeight="min-h-[92vh]"
             title="Chat"
-            centered={false}
+            centered={centered}
         >
 
-            <Mirc
-                height="92vh"
-                topHeight="4vh"
-                bottomHeight="84vh"
-            />
+            {content}
 
         </Content>
         

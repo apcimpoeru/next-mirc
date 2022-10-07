@@ -14,8 +14,8 @@ const SocketHandler = (req, res) => {
 
     io.on('connection', socket => {
         
-        socket.user = 'test_user';
 
+        socket.join('main');
         socket.on('join_room', function(data){
           
           let room = data.room;
@@ -54,19 +54,33 @@ const SocketHandler = (req, res) => {
           
         });
 
+        socket.on('setUsername', function(username){
+          socket.user = username;
+        });
+
         socket.on('sendMessage', function(data){
+
           let room = data.room;
           let message = data.message;
-          console.log(data);
-          console.log('sending message: ' + message);
-          console.log('to: ' + room);
-
           io.in(room).emit('getMessage', {message: message, user: socket.user, room: room});
+
         });
 
         socket.on('joinRoom', function(roomName){
 
+          // joins room
           socket.join('#' + roomName);
+
+          // get list of users in room
+          let userList = [];
+          let clients = io.sockets.adapter.rooms;
+          let clientsId = clients.get('#' + roomName);
+          for (let clientId of clientsId) {
+            let clientSocket = io.sockets.sockets.get(clientId);
+            userList.push(clientSocket.user);
+          }
+
+          // send list of users to room
           let rooms = socket.rooms;
           let roomList = [];
           for (let room of rooms) {
@@ -75,8 +89,20 @@ const SocketHandler = (req, res) => {
             }
           }
           
+          let roomData = {
+            room: '#' + roomName,
+            userList: userList
+          }
 
-          io.in('#' + roomName).emit('refreshRooms', roomList);
+          console.log('roomName');
+          console.log(roomName);
+          console.log('');
+          console.log('roomList');
+          console.log(roomList);
+          console.log('');
+
+          // io.to(socket.id).emit('joinedRoom', roomData);
+          io.in('#' + roomName).emit('joinedRoom', roomData);
 
         });
 

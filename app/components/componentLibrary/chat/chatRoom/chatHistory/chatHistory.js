@@ -9,6 +9,8 @@ export default function ChatHistory(props){
     const [messages, setMessages] = useState();
     const [messageHTML, setMessageHTML] = useState(<></>);
 
+    const roomRef = useRef(room);
+
     // listens for new messages and updates the message list
     // the message list is a reference to the messages state variable
     useEffect(() => {
@@ -67,8 +69,17 @@ export default function ChatHistory(props){
     // when the room changes, update the room state
     useEffect(() => {
 
+        console.log("PROPS ROOM", props.room);
         if (props.room) {
-            setRoom(props.room);
+
+            if (props.joined) {
+                setRoom(props.room);
+            } else {
+                if (props.room == roomRef.current){
+                    setRoom('You left the room');
+                }
+            }
+
         }
 
     }, [props.room]);
