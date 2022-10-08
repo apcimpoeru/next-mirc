@@ -106,10 +106,23 @@ const SocketHandler = (req, res) => {
 
         });
 
-        socket.on('leaving_room', function(data){
-          // socket.leave(data);
-          // io.in('#main').emit('refresh_rooms');
-          // io.in(data).emit('user_left');
+        socket.on('leftRoom', function(roomData){
+          
+          socket.leave(roomData.room);
+          console.log('user left room');
+          console.log(roomData);
+          // get list of users in room
+          let userList = [];
+          let clients = io.sockets.adapter.rooms;
+          let clientsId = clients.get(roomData.room);
+          for (let clientId of clientsId) {
+            console.log('clientId', clientId);
+            let clientSocket = io.sockets.sockets.get(clientId);
+            console.log('sending message to user: ' + clientSocket.user);
+            userList.push(clientSocket.user);
+            io.to(clientId).emit('getMessage', {message: 'user left room', user: clientSocket.user, room: roomData.room, system: true, roomList: roomData.roomList});
+          }
+
         });
 
         socket.on('room_created', function(data){

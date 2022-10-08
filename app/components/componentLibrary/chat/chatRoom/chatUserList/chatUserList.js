@@ -33,6 +33,8 @@ export default function ChatUserList(props){
         
         
     }, [props.roomData]);
+        console.log("TRIGGERED!!!!");
+    useEffect(() => {}, [props.leftRoom]);
 
     useEffect(() => 
     {}, [userListHTML]);

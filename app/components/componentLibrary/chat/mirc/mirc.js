@@ -18,6 +18,7 @@ export default function Mirc(props){
     const [userList, setUserList] = useState({});
     const [messageData, setMessageData] = useState({});
 
+    const [leftRoom, setLeftRoom] = useState('');
 
     const currentRoomRef = useRef(currentRoom);
 
@@ -31,14 +32,17 @@ export default function Mirc(props){
     function leaveRoom(e){
 
         let name = e.currentTarget.getAttribute('attr-name');
+        
         const roomData = {
             room: name,
             userList: null,
             joined: false,
         }
+
+        socket.emit('leftRoom', roomData);
         setCurrentRoom('left');
         setRoomData(roomData);
-
+        console.log(' ---------- emitting left room', roomData);
     }
 
     useEffect(async () => {
@@ -71,7 +75,14 @@ export default function Mirc(props){
                     messageUser: data.user,
                 }
 
-                setMessageData(messageData);
+                console.log('received message', data);
+
+                if (data.system == true && data.message == 'user left room'){
+                    console.log('a user left the room ' + data.room);
+                    setLeftRoom(data.user);
+                }
+
+                setMessageData(data);
 
                 if (data.room != currentRoomRef.current) {  
                     setNotificationRoom(data.room);
@@ -88,7 +99,7 @@ export default function Mirc(props){
         <div className={`chatInner flex w-[100%] h-[92vh]`}>
 
             <div className="border-2 border-black chatRoomList flex w-[10%] overflow-y-auto">
-                <ChatRoomList leaveRoom={leaveRoom} selectRoom={selectRoom} notificationRoom={notificationRoom} roomData={roomData}/>
+                <ChatRoomList leaveRoom={leaveRoom} leftRoom={leftRoom} selectRoom={selectRoom} notificationRoom={notificationRoom} roomData={roomData}/>
             </div>
 
             <div className="p-4 chatInnerWrapper flex w-[80%] flex-col items-center justify-end">
