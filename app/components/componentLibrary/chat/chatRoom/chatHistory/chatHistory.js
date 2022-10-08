@@ -45,6 +45,13 @@ export default function ChatHistory(props){
     // when the room changes or we receive new messages, update the message list
     useEffect(() => {
 
+        console.log(' !!!!!!!!!! MESSAGES');
+
+        console.log('props.leftRoom', props.leftRoom);
+        console.log('props.room', props.room)
+        if (props.leftRoom.room == props.room){
+            setRoom("YOU LEFT");
+        }
         if (messages) {
 
             if (typeof(messages[props.room]) !== 'undefined') {
@@ -53,36 +60,19 @@ export default function ChatHistory(props){
                 const html = messages[props.room].map((data, index) => {
                     return <p key={index}>{data.user} : {data.message}</p>
                 });
-
+                setRoom(props.room);
                 setMessageHTML(html);
             } else {
+                setRoom(props.room);
                 setMessageHTML(<></>);
             }
         } else {
+            setRoom(props.room);
             setMessageHTML(<></>);
         }
-        
-
-    }, [messages, props.room]);
     
+    }, [messages, props.room, props.leftRoom]);
     
-    // when the room changes, update the room state
-    useEffect(() => {
-
-        console.log("PROPS ROOM", props.room);
-        if (props.room) {
-
-            if (props.joined) {
-                setRoom(props.room);
-            } else {
-                if (props.room == roomRef.current){
-                    setRoom('You left the room');
-                }
-            }
-
-        }
-
-    }, [props.room]);
 
     return <div className={`chatHistory w-full`}>
         <p className="mb-8 text-center">{room}</p>

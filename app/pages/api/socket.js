@@ -101,8 +101,9 @@ const SocketHandler = (req, res) => {
           console.log(roomList);
           console.log('');
 
-          // io.to(socket.id).emit('joinedRoom', roomData);
-          io.in('#' + roomName).emit('joinedRoom', roomData);
+          io.to(socket.id).emit('joinedRoom', roomData);
+          // io.in('#' + roomName).emit('joinedRoom', roomData);
+          socket.to('#' + roomName).emit('getMessage', { message: 'join', user: socket.user, room: roomData.room, system: true });
 
         });
 
@@ -115,12 +116,13 @@ const SocketHandler = (req, res) => {
           let userList = [];
           let clients = io.sockets.adapter.rooms;
           let clientsId = clients.get(roomData.room);
+
           for (let clientId of clientsId) {
             console.log('clientId', clientId);
             let clientSocket = io.sockets.sockets.get(clientId);
             console.log('sending message to user: ' + clientSocket.user);
             userList.push(clientSocket.user);
-            io.to(clientId).emit('getMessage', {message: 'user left room', user: clientSocket.user, room: roomData.room, system: true, roomList: roomData.roomList});
+            io.to(clientId).emit('getMessage', { message: 'left', user: socket.user, room: roomData.room, system: true });
           }
 
         });

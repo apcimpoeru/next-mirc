@@ -14,7 +14,7 @@ export default function ChatRoomList(props){
 
     function generateHTML(){
 
-        console.log('--- Generate html');
+        console.log('Generating room list html');
         let html;
 
         if (Object.keys(roomListRef.current).length > 0) {
@@ -50,45 +50,45 @@ export default function ChatRoomList(props){
 
     useEffect(() => {
 
-        console.log('new room data');
-        console.log(props.roomData);
 
-        let room = props.roomData.room;
-        let joined = props.roomData.joined;
-        console.log('joined', joined);
-        
-        if (joined == true) {
+        if (typeof props.roomData.room !== 'undefined') {
 
-            if (room !== undefined && room != '') {
-                roomListRef.current[room] = {notification:0, selected:1};
-            }
+            let room = props.roomData.room;
+            let joined = props.roomData.joined;
 
-            if (Object.keys(roomListRef.current).length > 0) {
-                for (let key in roomListRef.current) {
-                    if (key !== room) {
-                        roomListRef.current[key].selected = 0;
-                    } else {
-                        roomListRef.current[key].selected = 1;
+            console.log('Joined room componenet', props.roomData);
+
+            if (joined == true) {
+
+                if (room !== undefined && room != '') {
+                    roomListRef.current[room] = {notification:0, selected:1};
+                }
+
+                if (Object.keys(roomListRef.current).length > 0) {
+                    for (let key in roomListRef.current) {
+                        if (key !== room) {
+                            roomListRef.current[key].selected = 0;
+                        } else {
+                            roomListRef.current[key].selected = 1;
+                        }
                     }
                 }
+
+            } else if (joined == false) {
+
+                if (room !== undefined && room != '') {
+
+                    let m = {...roomListRef.current};
+                    delete m[room];
+                    roomListRef.current = m;
+
+                }
+
             }
 
-        } else if (joined == false) {
-
-            if (room !== undefined && room != '') {
-
-                let m = {...roomListRef.current};
-                delete m[room];
-                console.log('room', room);
-                console.log('m', m);
-                roomListRef.current = m;
-
-            }
+            generateHTML();
 
         }
-
-        generateHTML();
-
     }, [props.roomData]);
 
     useEffect(() => {

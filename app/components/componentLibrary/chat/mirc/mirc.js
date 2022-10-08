@@ -15,10 +15,8 @@ export default function Mirc(props){
     const [roomData, setRoomData] = useState({});
     const [notificationRoom, setNotificationRoom] = useState('');
 
-    const [userList, setUserList] = useState({});
-    const [messageData, setMessageData] = useState({});
-
     const [leftRoom, setLeftRoom] = useState('');
+    const [joinedRoom, setJoinedRoom] = useState({});
 
     const currentRoomRef = useRef(currentRoom);
 
@@ -42,17 +40,15 @@ export default function Mirc(props){
         socket.emit('leftRoom', roomData);
         setCurrentRoom('left');
         setRoomData(roomData);
-        console.log(' ---------- emitting left room', roomData);
+
     }
 
     useEffect(async () => {
 
         if (typeof socket.on === 'function') {
 
-
+            // when the user first joins a room
             socket.on('joinedRoom', (data) => {
-
-                console.log('received');
 
                 const roomData = {
                     room: data.room,
@@ -67,28 +63,26 @@ export default function Mirc(props){
  
             });
 
+            // when a user receives a message, be it system or user
             socket.on('getMessage', (data) => {
 
-                const messageData = {
-                    message: data.message,
-                    messageRoom: data.room,
-                    messageUser: data.user,
+                // system message - user left
+                if (data.system == true && data.message == 'left'){
+                    setLeftRoom({room: data.room, user: data.user});
                 }
 
-                console.log('received message', data);
-
-                if (data.system == true && data.message == 'user left room'){
-                    console.log('a user left the room ' + data.room);
-                    setLeftRoom(data.user);
+                // system message - user joined
+                if (data.system == true && data.message == 'join'){
+                    setJoinedRoom({room: data.room, user: data.user});
                 }
 
-                setMessageData(data);
-
+                // if the message is not from the current room, add a notification
                 if (data.room != currentRoomRef.current) {  
                     setNotificationRoom(data.room);
                 }
 
             });
+
 
         }
         
@@ -99,16 +93,25 @@ export default function Mirc(props){
         <div className={`chatInner flex w-[100%] h-[92vh]`}>
 
             <div className="border-2 border-black chatRoomList flex w-[10%] overflow-y-auto">
-                <ChatRoomList leaveRoom={leaveRoom} leftRoom={leftRoom} selectRoom={selectRoom} notificationRoom={notificationRoom} roomData={roomData}/>
+
+                <ChatRoomList 
+                    leaveRoom={leaveRoom} 
+                    leftRoom={leftRoom} 
+                    joinedRoom={joinedRoom}
+                    selectRoom={selectRoom} 
+                    notificationRoom={notificationRoom} 
+                    roomData={roomData
+                }/>
+                
             </div>
 
             <div className="p-4 chatInnerWrapper flex w-[80%] flex-col items-center justify-end">
-                <ChatHistory room={currentRoom}/>
+                <ChatHistory leftRoom={leftRoom} room={currentRoom}/>
                 <ChatForm room={currentRoom}/>
             </div>
 
             <div className="border-2 border-black chatUserList flex w-[10%]">
-                <ChatUserList roomData={roomData}/>
+                <ChatUserList leftRoom={leftRoom} joinedRoom={joinedRoom} roomData={roomData}/>
             </div>
 
         </div>

@@ -7,14 +7,21 @@ export default function ChatUserList(props){
 
     const userListRef = useRef({});
 
+    function generateHTML(room){
+        
+        const html = userListRef.current[props.roomData.room].map((user, index) => {
+            return <p className="w-full p-2 bg-[lightgrey] mb-1 cursor-pointer" key={index}>{user}</p>
+        });
+
+        setUserListHTML(html);
+        
+    }
+
     useEffect(() => {
 
-        console.log('--- User list changed');
 
         if (Object.keys(props.roomData).length > 0 && props.roomData.userList !== null) {
 
-            console.log('------------ refresh list ------------');
-            console.log(userListRef.current);
 
             let room = props.roomData.room;
             let userList = props.roomData.userList;
@@ -23,21 +30,48 @@ export default function ChatUserList(props){
                 userListRef.current[room] = userList;
             }
 
-            const html = userListRef.current[room].map((user, index) => {
-                return <p className="w-full p-2 bg-[lightgrey] mb-1 cursor-pointer" key={index}>{user}</p>
-            });
+            generateHTML(room);
+
+        } else if (Object.keys(props.roomData).length > 0 && props.roomData.userList == null) {
             
-            setUserListHTML(html);
+            generateHTML(props.roomData.room);
 
         }
         
         
     }, [props.roomData]);
-        console.log("TRIGGERED!!!!");
-    useEffect(() => {}, [props.leftRoom]);
 
-    useEffect(() => 
-    {}, [userListHTML]);
+    useEffect(() => {
+
+        // when user joins, we add him to list
+        if (typeof props.joinedRoom.user !== 'undefined') {
+            userListRef.current[props.joinedRoom.room].push(props.joinedRoom.user);
+            generateHTML(props.joinedRoom.room);
+        }
+
+    }, [props.joinedRoom]);
+
+    useEffect(() => {
+
+        // when user leaves, we remove them from the list
+        if (typeof props.leftRoom.user !== 'undefined') {
+            const index = userListRef.current[props.leftRoom.room].indexOf(props.leftRoom.user);
+            if (index > -1) { 
+                userListRef.current[props.leftRoom.room].splice(index, 1); 
+              }
+            generateHTML(props.joinedRoom.room);
+        }
+        
+    }, [props.leftRoom]);
+
+    // useEffect(() => {
+
+    //     if (typeof props.leftRoom.user !== 'undefined') {
+    //         console.log('------ left room', props.leftRoom);
+    //         console.log('------ room', props.leftRoom.room);
+    //     }
+
+    // }, [props.leftRoom, props.roomData]);
 
     return <div className="w-full">
         {userListHTML}
