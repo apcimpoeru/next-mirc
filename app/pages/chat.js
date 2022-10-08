@@ -27,6 +27,7 @@ export default function Chat(){
                 setCentered(false);
 
                 console.log('username set');
+                
                 socket.emit('setUsername', username);
     
             }

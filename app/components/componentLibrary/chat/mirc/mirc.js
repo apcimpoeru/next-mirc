@@ -38,7 +38,7 @@ export default function Mirc(props){
         }
 
         socket.emit('leftRoom', roomData);
-        setCurrentRoom('left');
+        setCurrentRoom('You have left room: ' + name);
         setRoomData(roomData);
 
     }

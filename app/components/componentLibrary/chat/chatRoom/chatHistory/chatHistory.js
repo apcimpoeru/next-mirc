@@ -74,7 +74,7 @@ export default function ChatHistory(props){
     }, [messages, props.room, props.leftRoom]);
     
 
-    return <div className={`chatHistory w-full`}>
+    return <div className={`chatHistory w-full overflow-auto`}>
         <p className="mb-8 text-center">{room}</p>
         <div className="text-left w-full">
             {messageHTML}
