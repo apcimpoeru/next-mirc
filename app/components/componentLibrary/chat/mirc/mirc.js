@@ -11,7 +11,7 @@ export default function Mirc(props){
 
     const socket = useContext(SocketContext);
 
-    const [currentRoom, setCurrentRoom] = useState('main');
+    const [currentRoom, setCurrentRoom] = useState('No rooms joined. Join a room to start chatting.');
     const [roomData, setRoomData] = useState({});
     const [notificationRoom, setNotificationRoom] = useState('');
 

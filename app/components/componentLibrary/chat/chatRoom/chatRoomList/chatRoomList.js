@@ -6,6 +6,7 @@ import { SocketContext } from "../../../../../lib/socketContext";
 export default function ChatRoomList(props){
 
     const [roomList, setRoomList] = useState([]);
+    const [roomListJSON, setRoomListJSON] = useState({});
     const roomListRef = useRef({});
 
     function test(){
@@ -36,7 +37,6 @@ export default function ChatRoomList(props){
                     className = 'bg-green-500';
                 }
                 
-
                 return <ChatItem leaveRoom={props.leaveRoom} className={className} name={room} key={index} onClick={props.selectRoom}/>
 
             });
@@ -44,6 +44,8 @@ export default function ChatRoomList(props){
         }
 
         setRoomList(html);
+        setRoomListJSON(roomListRef.current);
+        console.log('setting room list', roomListJSON);
         return html;
         
     }
@@ -58,6 +60,7 @@ export default function ChatRoomList(props){
 
             console.log('Joined room componenet', props.roomData);
 
+            // if user joined a room
             if (joined == true) {
 
                 if (room !== undefined && room != '') {
@@ -105,7 +108,7 @@ export default function ChatRoomList(props){
     // return HTML
     return <div className="text-center">
 
-        <JoinRoom/>
+        <JoinRoom roomList={roomListJSON} />
 
         <p className="mb-2">Joined rooms</p>
         <ul className="text-left px-2">

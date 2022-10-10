@@ -1,5 +1,5 @@
 import FormInput from "../../../formInput/formInput"
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { SocketContext } from "../../../../../lib/socketContext";
 
 export default function JoinRoom(props){

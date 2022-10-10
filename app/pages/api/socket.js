@@ -66,6 +66,27 @@ const SocketHandler = (req, res) => {
 
         });
 
+        socket.on('checkUsername', function(username){
+          
+          let clients = io.sockets.adapter.rooms;
+          let clientsId = clients.get('#main');
+          let usernameTaken = false;
+
+          for (let clientId of clientsId) {
+            let clientSocket = io.sockets.sockets.get(clientId);
+            if (clientSocket.user == username){
+              usernameTaken = true;
+            }
+          }
+
+          if (usernameTaken == false){
+            socket.user = username;
+          }
+          
+          io.to(socket.id).emit('usernameCheckResult', usernameTaken);
+
+        });
+
         socket.on('joinRoom', function(roomName){
 
           // joins room
@@ -135,9 +156,20 @@ const SocketHandler = (req, res) => {
 
         socket.on('disconnecting', function(){
 
-          // for (let room of socket.rooms) {
+          let rooms = socket.rooms;
+          for (let room of rooms) {
+            if (room.startsWith('#')) {
 
-          // }
+              // get list of users in room
+              let clients = io.sockets.adapter.rooms;
+              let clientsId = clients.get(room);
+
+              for (let clientId of clientsId) {
+                io.to(clientId).emit('getMessage', { message: 'left', user: socket.user, room: room, system: true });
+              }
+              
+            }
+          }
 
         });
 
