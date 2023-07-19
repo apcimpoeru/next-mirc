@@ -1,19 +1,19 @@
 
 # Nextjs Multiplayer Platform
 
-A brief description of what this project does and who it's for
+A basic clone of the popular chat service IRC, constructed with Next.js and Socket. It includes room functionality and notifications. 
 
 
 ## Demo
 
-Insert gif or link to demo
+[You can test it here](http://137.184.83.232:3001/)
 
 
 ## Installation
 
 You need Docker. 
 
-Once clones, you can just build the docker image:
+Once cloned, you can just build the docker image:
 
 ```bash
     docker-compose build
@@ -25,13 +25,4 @@ Make sure to download the dependencies inside /app:
     npm i
 ```
     
-## Roadmap
-
-- Quickplay option
-
-- Profile creation and score saving
-
-- Improve UI
-
-- More games
 
